@@ -20,10 +20,10 @@ st.title("Envío de Datos a API")
 # Mostrar mensaje de alerta en un recuadro usando st.info
 st.info(
     """
-    **Importante:**
-    Es necesario subir el archivo a Google Drive para que Enfocus pueda acceder a él.
+    **Importante:**  
+    Es necesario subir el archivo a Google Drive para que Enfocus pueda acceder a él.  
     La carpeta debe estar configurada para que cualquier persona con el enlace tenga acceso como **Editor**.
-    Esta carpeta ya se encuentra configurada correctamente.
+    
     [Ir a la carpeta de Drive](https://drive.google.com/drive/folders/1EJFsO66uzrgWh9jZNLGTn5sORglf_Vcc?usp=sharing)
     """
 )
