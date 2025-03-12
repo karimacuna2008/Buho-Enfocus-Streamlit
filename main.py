@@ -3,6 +3,13 @@ import requests
 import re
 import time
 
+# Si se ha activado el flag "reset", eliminamos las claves de los widgets
+if st.session_state.get("reset", False):
+    for key in ["link_original", "medida_x", "medida_y", "nombre", "nombre_seleccionado"]:
+        if key in st.session_state:
+            st.session_state.pop(key)
+    st.session_state["reset"] = False
+
 def convertir_link_gdrive(url):
     """
     Extrae el id del archivo desde la URL de Google Drive y retorna el link para descarga directa.
@@ -37,6 +44,7 @@ with st.form("datos_form"):
         medida_y = st.text_input("Medida Y", key="medida_y")
     nombre = st.text_input("Nombre del proyecto", key="nombre")
     
+    # Diccionario con nombres y correos
     correos = {
         "Karim Acuña": "kacuna@buhoms.com",
         "Mariana Hernández": "print@buhoms.com",
@@ -44,6 +52,7 @@ with st.form("datos_form"):
         "Pablo Faz": "pfaz@buhoms.com",
         "Susana Hernández": "shernandez@buhoms.com"
     }
+    # Crear lista con opción vacía y nombres ordenados
     nombres_ordenados = [""] + sorted(correos.keys())
     nombre_seleccionado = st.selectbox("Responsable", nombres_ordenados, index=0, key="nombre_seleccionado")
     correo_seleccionado = correos.get(nombre_seleccionado, "")
@@ -51,7 +60,7 @@ with st.form("datos_form"):
     submitted = st.form_submit_button("Enviar")
     
     if submitted:
-        # Validaciones
+        # Validar campos
         if not link_original.strip():
             st.error("Por favor, ingresa el link del archivo.")
             st.stop()
@@ -87,9 +96,8 @@ with st.form("datos_form"):
                 st.error("Error al enviar los datos")
             
             time.sleep(1)
-            # Reiniciar manualmente los campos asignando cadena vacía a las claves
-            for key in ["link_original", "medida_x", "medida_y", "nombre", "nombre_seleccionado"]:
-                st.session_state[key] = ""
+            # Activar el flag "reset" y reiniciar la app
+            st.session_state["reset"] = True
             st.rerun()
         except Exception as e:
             st.error(f"Ocurrió un error: {e}")
