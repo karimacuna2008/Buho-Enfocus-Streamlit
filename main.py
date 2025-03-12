@@ -17,7 +17,6 @@ def convertir_link_gdrive(url):
 
 st.title("Enfocus Switch")
 
-# Mostrar mensaje de alerta en un recuadro usando st.info
 st.info(
     """
     **Importante:**  
@@ -30,29 +29,16 @@ st.info(
     """
 )
 
-# Inicializar variables en session_state si aún no existen
-if "link_original" not in st.session_state:
-    st.session_state.link_original = ""
-if "medida_x" not in st.session_state:
-    st.session_state.medida_x = ""
-if "medida_y" not in st.session_state:
-    st.session_state.medida_y = ""
-if "nombre" not in st.session_state:
-    st.session_state.nombre = ""
-if "nombre_seleccionado" not in st.session_state:
-    st.session_state.nombre_seleccionado = ""
-
-# Entradas de usuario usando los valores del session_state
-link_original = st.text_input("Ingresa el link del archivo", key="link_original", value=st.session_state.link_original)
-
+# Definir valores por defecto en los widgets
+link_original = st.text_input("Ingresa el link del archivo", key="link_original", value="")
 st.markdown("<p style='text-align: center;'>Ingresar medidas del arte</p>", unsafe_allow_html=True)
 col1, col2 = st.columns(2)
 with col1:
-    medida_x = st.text_input("Medida X", key="medida_x", value=st.session_state.medida_x)
+    medida_x = st.text_input("Medida X", key="medida_x", value="")
 with col2:
-    medida_y = st.text_input("Medida Y", key="medida_y", value=st.session_state.medida_y)
+    medida_y = st.text_input("Medida Y", key="medida_y", value="")
 
-nombre = st.text_input("Nombre del proyecto", key="nombre", value=st.session_state.nombre)
+nombre = st.text_input("Nombre del proyecto", key="nombre", value="")
 
 # Diccionario con nombres y correos
 correos = {
@@ -63,16 +49,13 @@ correos = {
     "Susana Hernández": "shernandez@buhoms.com"
 }
 
-# Crear lista con opción vacía + nombres ordenados alfabéticamente
+# Crear lista con opción vacía y los nombres ordenados
 nombres_ordenados = [""] + sorted(correos.keys())
 nombre_seleccionado = st.selectbox("Responsable", nombres_ordenados, index=0, key="nombre_seleccionado")
-if nombre_seleccionado:
-    correo_seleccionado = correos[nombre_seleccionado]
-else:
-    correo_seleccionado = ""
+correo_seleccionado = correos.get(nombre_seleccionado, "")
 
 if st.button("Enviar"):
-    # Validar que todos los campos requeridos estén completos
+    # Validación de campos
     if not link_original.strip():
         st.error("Por favor, ingresa el link del archivo.")
         st.stop()
@@ -86,10 +69,10 @@ if st.button("Enviar"):
         st.error("Por favor, selecciona un responsable.")
         st.stop()
     
-    # Convertir el link de Google Drive a un link de descarga directa
+    # Convertir el link de Google Drive
     link_convertido = convertir_link_gdrive(link_original)
     
-    # Preparar el payload en formato multipart/form-data
+    # Preparar el payload
     payload = {
         'file': (None, link_convertido),
         'medida_x': (None, medida_x),
@@ -111,14 +94,9 @@ if st.button("Enviar"):
             st.success("Datos enviados correctamente")
         else:
             st.error("Error al enviar los datos")
-            
-        # Esperar 1 segundo, limpiar los valores del session_state y reiniciar la app
+        
+        # Esperar 1 segundo y reiniciar la app para que se reinicien los widgets a sus valores por defecto
         time.sleep(1)
-        st.session_state.link_original = ""
-        st.session_state.medida_x = ""
-        st.session_state.medida_y = ""
-        st.session_state.nombre = ""
-        st.session_state.nombre_seleccionado = ""
         st.experimental_rerun()
     except Exception as e:
         st.error(f"Ocurrió un error: {e}")
