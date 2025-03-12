@@ -2,13 +2,7 @@ import streamlit as st
 import requests
 import re
 import time
-
-# Si se ha activado el flag "reset", eliminamos las claves de los widgets
-if st.session_state.get("reset", False):
-    for key in ["link_original", "medida_x", "medida_y", "nombre", "nombre_seleccionado"]:
-        if key in st.session_state:
-            st.session_state.pop(key)
-    st.session_state["reset"] = False
+from streamlit_autorefresh import st_autorefresh
 
 def convertir_link_gdrive(url):
     """
@@ -35,14 +29,14 @@ st.info(
 )
 
 with st.form("datos_form"):
-    link_original = st.text_input("Ingresa el link del archivo", key="link_original")
+    link_original = st.text_input("Ingresa el link del archivo", key="link_original", value="")
     st.markdown("<p style='text-align: center;'>Ingresar medidas del arte</p>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
-        medida_x = st.text_input("Medida X", key="medida_x")
+        medida_x = st.text_input("Medida X", key="medida_x", value="")
     with col2:
-        medida_y = st.text_input("Medida Y", key="medida_y")
-    nombre = st.text_input("Nombre del proyecto", key="nombre")
+        medida_y = st.text_input("Medida Y", key="medida_y", value="")
+    nombre = st.text_input("Nombre del proyecto", key="nombre", value="")
     
     # Diccionario con nombres y correos
     correos = {
@@ -60,7 +54,7 @@ with st.form("datos_form"):
     submitted = st.form_submit_button("Enviar")
     
     if submitted:
-        # Validar campos
+        # Validar que todos los campos requeridos estén completos
         if not link_original.strip():
             st.error("Por favor, ingresa el link del archivo.")
             st.stop()
@@ -91,13 +85,11 @@ with st.form("datos_form"):
             st.code(response.text)
             
             if response.status_code == 200:
-                st.success("Datos enviados correctamente")
+                st.success("Datos enviados correctamente. La página se refrescará en 3 segundos...")
             else:
-                st.error("Error al enviar los datos")
+                st.error("Error al enviar los datos. La página se refrescará en 3 segundos...")
             
-            time.sleep(3)
-            # Activar el flag "reset" y reiniciar la app
-            st.session_state["reset"] = True
-            st.rerun()
+            # Refresca la página 3 segundos después (3000 milisegundos) una sola vez.
+            st_autorefresh(interval=3000, limit=1, key="auto_refresh")
         except Exception as e:
             st.error(f"Ocurrió un error: {e}")
