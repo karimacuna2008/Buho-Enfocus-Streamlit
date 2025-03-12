@@ -17,14 +17,18 @@ def convertir_link_gdrive(url):
 
 st.title("Envío de Datos a API")
 
-# Mensaje de alerta con enlace a la carpeta de Google Drive
+# Mostrar mensaje en un recuadro destacado
 st.markdown(
     """
-    **Importante:**  
-    Es necesario subir el archivo a Google Drive para que Enfocus pueda acceder a él.  
-    La carpeta debe estar configurada para que cualquier persona con el enlace tenga acceso como **Editor**.  
-    Esta carpeta ya se encuentra configurada correctamente.  
-    [Ir a la carpeta de Drive](https://drive.google.com/drive/folders/1EJFsO66uzrgWh9jZNLGTn5sORglf_Vcc?usp=sharing)
+    <div style="border: 2px solid #ff4b4b; border-radius: 5px; padding: 10px; background-color: #ffe6e6;">
+        <strong>Importante:</strong><br>
+        Es necesario subir el archivo a Google Drive para que Enfocus pueda acceder a él.  
+        La carpeta debe estar configurada para que cualquier persona con el enlace tenga acceso como <strong>Editor</strong>.<br>
+        Esta carpeta ya se encuentra configurada correctamente.  
+        <a href="https://drive.google.com/drive/folders/1EJFsO66uzrgWh9jZNLGTn5sORglf_Vcc?usp=sharing" target="_blank">
+            Ir a la carpeta de Drive
+        </a>
+    </div>
     """, unsafe_allow_html=True)
 
 # Entradas de usuario
@@ -49,7 +53,7 @@ correos = {
     "Susana Hernández": "shernandez@buhoms.com"
 }
 
-# Lista de nombres ordenados alfabéticamente
+# Crear lista de nombres ordenados alfabéticamente
 nombres_ordenados = sorted(correos.keys())
 nombre_seleccionado = st.selectbox("Selecciona el nombre", nombres_ordenados, key="nombre_seleccionado")
 correo_seleccionado = correos[nombre_seleccionado]
