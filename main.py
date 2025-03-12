@@ -95,8 +95,11 @@ if st.button("Enviar"):
         else:
             st.error("Error al enviar los datos")
         
-        # Esperar 1 segundo y reiniciar la app para limpiar los campos
+        # Esperar 1 segundo y limpiar los campos eliminando las claves del session_state
         time.sleep(1)
+        for key in ["link_original", "medida_x", "medida_y", "nombre", "nombre_seleccionado"]:
+            if key in st.session_state:
+                del st.session_state[key]
         st.rerun()
     except Exception as e:
         st.error(f"Ocurrió un error: {e}")
