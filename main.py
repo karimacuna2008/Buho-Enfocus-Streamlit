@@ -24,7 +24,7 @@ st.info(
     Es necesario subir el archivo a Google Drive para que Enfocus pueda acceder a él.  
     La carpeta debe estar configurada para que cualquier persona con el enlace tenga acceso como **Editor**.
     
-    Esta carpeta ya ha sido configurada correctamente, es posible usarla. Si es necesario comunicarse con Karim Acuña (kacuna@buhoms.com).
+    Esta carpeta ya ha sido configurada correctamente; si es necesario, comunicarse con Karim Acuña (kacuna@buhoms.com).
 
     [Ir a la carpeta de Drive](https://drive.google.com/drive/folders/1EJFsO66uzrgWh9jZNLGTn5sORglf_Vcc?usp=sharing)
     """
@@ -45,7 +45,6 @@ nombre = st.text_input("Nombre del proyecto", key="nombre")
 
 # Diccionario con nombres y correos
 correos = {
-    "Seleccionar responsable": "",
     "Karim Acuña": "kacuna@buhoms.com",
     "Mariana Hernández": "print@buhoms.com",
     "Mauricio Fernandez": "mfernandez@buhoms.com",
@@ -53,43 +52,59 @@ correos = {
     "Susana Hernández": "shernandez@buhoms.com"
 }
 
-# Crear lista de nombres ordenados alfabéticamente
-nombres_ordenados = sorted(correos.keys())
+# Crear lista de nombres ordenados alfabéticamente, agregando una opción vacía
+nombres_ordenados = [""] + sorted(correos.keys())
 nombre_seleccionado = st.selectbox("Responsable", nombres_ordenados, key="nombre_seleccionado")
-correo_seleccionado = correos[nombre_seleccionado]
+
+# Obtener el correo correspondiente, solo si se seleccionó un nombre válido
+if nombre_seleccionado:
+    correo_seleccionado = correos[nombre_seleccionado]
+else:
+    correo_seleccionado = ""
 
 if st.button("Enviar"):
-    # Convertir el link de Google Drive a un link de descarga directa
-    link_convertido = convertir_link_gdrive(link_original)
-    
-    # Preparar el payload en formato multipart/form-data
-    payload = {
-        'file': (None, link_convertido),
-        'medida_x': (None, medida_x),
-        'medida_y': (None, medida_y),
-        'nombre': (None, nombre),
-        'email': (None, correo_seleccionado)
-    }
-    
-    url_api = "http://189.192.20.132:51088/scripting/notify"
-    
-    try:
-        response = requests.post(url_api, files=payload)
+    # Verificar que todos los campos requeridos estén llenos
+    if not link_original.strip():
+        st.error("Por favor, ingresa el link del archivo.")
+    elif not medida_x.strip() or not medida_y.strip():
+        st.error("Por favor, ingresa ambas medidas (X y Y).")
+    elif not nombre.strip():
+        st.error("Por favor, ingresa el nombre del proyecto.")
+    elif not nombre_seleccionado:
+        st.error("Por favor, selecciona un responsable.")
+    else:
+        # Convertir el link de Google Drive a un link de descarga directa
+        link_convertido = convertir_link_gdrive(link_original)
         
-        st.write("**Código de estado:**", response.status_code)
-        st.write("**Respuesta de la API:**")
-        st.code(response.text)
+        # Preparar el payload en formato multipart/form-data
+        payload = {
+            'file': (None, link_convertido),
+            'medida_x': (None, medida_x),
+            'medida_y': (None, medida_y),
+            'nombre': (None, nombre),
+            'email': (None, correo_seleccionado)
+        }
         
-        if response.status_code == 200:
-            st.success("Datos enviados correctamente")
-        else:
-            st.error("Error al enviar los datos")
+        url_api = "http://189.192.20.132:51088/scripting/notify"
+        
+        try:
+            response = requests.post(url_api, files=payload)
             
-        # Esperar 1 segundo y limpiar los campos
-        time.sleep(1)
-        st.session_state.link_original = ""
-        st.session_state.medida_x = ""
-        st.session_state.medida_y = ""
-        st.session_state.nombre = ""
-    except Exception as e:
-        st.error(f"Ocurrió un error: {e}")
+            st.write("**Código de estado:**", response.status_code)
+            st.write("**Respuesta de la API:**")
+            st.code(response.text)
+            
+            if response.status_code == 200:
+                st.success("Datos enviados correctamente")
+            else:
+                st.error("Error al enviar los datos")
+                
+            # Esperar 1 segundo y limpiar los campos
+            time.sleep(1)
+            st.session_state.link_original = ""
+            st.session_state.medida_x = ""
+            st.session_state.medida_y = ""
+            st.session_state.nombre = ""
+            st.session_state.nombre_seleccionado = ""
+        except Exception as e:
+            st.error(f"Ocurrió un error: {e}")
