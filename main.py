@@ -15,7 +15,7 @@ def convertir_link_gdrive(url):
     else:
         return url  # Retorna la URL original si no se encuentra el patrón
 
-st.title("Envío de Datos a API")
+st.title("Enfocus Switch")
 
 # Mostrar mensaje de alerta en un recuadro usando st.info
 st.info(
@@ -29,16 +29,17 @@ st.info(
 )
 
 # Entradas de usuario
-link_original = st.text_input("Ingresa el link del archivo (Google Drive)", key="link_original")
+link_original = st.text_input("Ingresa el link del archivo", key="link_original")
 
 # Mostrar los campos de medida en dos columnas
+st.header("Ingresar medidas")
 col1, col2 = st.columns(2)
 with col1:
-    medida_x = st.text_input("Ingresa la medida x", key="medida_x")
+    medida_x = st.text_input("Medida X", key="medida_x")
 with col2:
-    medida_y = st.text_input("Ingresa la medida y", key="medida_y")
+    medida_y = st.text_input("Medida Y", key="medida_y")
 
-nombre = st.text_input("Ingresa un nombre", key="nombre")
+nombre = st.text_input("Nombre del proyecto", key="nombre")
 
 # Diccionario con nombres y correos
 correos = {
@@ -51,7 +52,7 @@ correos = {
 
 # Crear lista de nombres ordenados alfabéticamente
 nombres_ordenados = sorted(correos.keys())
-nombre_seleccionado = st.selectbox("Selecciona el nombre", nombres_ordenados, key="nombre_seleccionado")
+nombre_seleccionado = st.selectbox("Responsable", nombres_ordenados, key="nombre_seleccionado")
 correo_seleccionado = correos[nombre_seleccionado]
 
 if st.button("Enviar"):
