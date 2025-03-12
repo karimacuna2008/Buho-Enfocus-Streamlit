@@ -2,6 +2,14 @@ import streamlit as st
 import requests
 import re
 import time
+from streamlit_autorefresh import st_autorefresh
+
+# Si se ha activado el flag "reset", eliminamos las claves de los widgets
+if st.session_state.get("reset", False):
+    for key in ["link_original", "medida_x", "medida_y", "nombre", "nombre_seleccionado"]:
+        if key in st.session_state:
+            st.session_state.pop(key)
+    st.session_state["reset"] = False
 
 def convertir_link_gdrive(url):
     """
@@ -28,14 +36,14 @@ st.info(
 )
 
 with st.form("datos_form"):
-    link_original = st.text_input("Ingresa el link del archivo", key="link_original", value="")
+    link_original = st.text_input("Ingresa el link del archivo", key="link_original")
     st.markdown("<p style='text-align: center;'>Ingresar medidas del arte</p>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
-        medida_x = st.text_input("Medida X", key="medida_x", value="")
+        medida_x = st.text_input("Medida X", key="medida_x")
     with col2:
-        medida_y = st.text_input("Medida Y", key="medida_y", value="")
-    nombre = st.text_input("Nombre del proyecto", key="nombre", value="")
+        medida_y = st.text_input("Medida Y", key="medida_y")
+    nombre = st.text_input("Nombre del proyecto", key="nombre")
     
     # Diccionario con nombres y correos
     correos = {
@@ -53,7 +61,7 @@ with st.form("datos_form"):
     submitted = st.form_submit_button("Enviar")
     
     if submitted:
-        # Validar que todos los campos requeridos estén completos
+        # Validar campos
         if not link_original.strip():
             st.error("Por favor, ingresa el link del archivo.")
             st.stop()
@@ -83,13 +91,14 @@ with st.form("datos_form"):
             st.write("**Respuesta de la API:**")
             st.code(response.text)
             
-            msg_placeholder = st.empty()
             if response.status_code == 200:
-                msg_placeholder.success("Datos enviados correctamente")
+                st.success("Datos enviados correctamente")
             else:
-                msg_placeholder.error("Error al enviar los datos")
+                st.error("Error al enviar los datos")
             
             time.sleep(3)
-            msg_placeholder.empty()  # Se quita el mensaje después de 3 segundos
+            # Activar el flag "reset" y reiniciar la app
+            st.session_state["reset"] = True
+            st.rerun()
         except Exception as e:
             st.error(f"Ocurrió un error: {e}")
