@@ -30,18 +30,29 @@ st.info(
     """
 )
 
-# Entradas de usuario
-link_original = st.text_input("Ingresa el link del archivo", key="link_original")
+# Inicializar variables en session_state si aún no existen
+if "link_original" not in st.session_state:
+    st.session_state.link_original = ""
+if "medida_x" not in st.session_state:
+    st.session_state.medida_x = ""
+if "medida_y" not in st.session_state:
+    st.session_state.medida_y = ""
+if "nombre" not in st.session_state:
+    st.session_state.nombre = ""
+if "nombre_seleccionado" not in st.session_state:
+    st.session_state.nombre_seleccionado = ""
 
-# Mostrar los campos de medida en dos columnas
+# Entradas de usuario usando los valores del session_state
+link_original = st.text_input("Ingresa el link del archivo", key="link_original", value=st.session_state.link_original)
+
 st.markdown("<p style='text-align: center;'>Ingresar medidas del arte</p>", unsafe_allow_html=True)
 col1, col2 = st.columns(2)
 with col1:
-    medida_x = st.text_input("Medida X", key="medida_x")
+    medida_x = st.text_input("Medida X", key="medida_x", value=st.session_state.medida_x)
 with col2:
-    medida_y = st.text_input("Medida Y", key="medida_y")
+    medida_y = st.text_input("Medida Y", key="medida_y", value=st.session_state.medida_y)
 
-nombre = st.text_input("Nombre del proyecto", key="nombre")
+nombre = st.text_input("Nombre del proyecto", key="nombre", value=st.session_state.nombre)
 
 # Diccionario con nombres y correos
 correos = {
@@ -52,59 +63,62 @@ correos = {
     "Susana Hernández": "shernandez@buhoms.com"
 }
 
-# Crear lista de nombres ordenados alfabéticamente, agregando una opción vacía
+# Crear lista con opción vacía + nombres ordenados alfabéticamente
 nombres_ordenados = [""] + sorted(correos.keys())
-nombre_seleccionado = st.selectbox("Responsable", nombres_ordenados, key="nombre_seleccionado")
-
-# Obtener el correo correspondiente, solo si se seleccionó un nombre válido
+nombre_seleccionado = st.selectbox("Responsable", nombres_ordenados, index=0, key="nombre_seleccionado")
 if nombre_seleccionado:
     correo_seleccionado = correos[nombre_seleccionado]
 else:
     correo_seleccionado = ""
 
 if st.button("Enviar"):
-    # Verificar que todos los campos requeridos estén llenos
+    # Validar que todos los campos requeridos estén completos
     if not link_original.strip():
         st.error("Por favor, ingresa el link del archivo.")
-    elif not medida_x.strip() or not medida_y.strip():
+        st.stop()
+    if not medida_x.strip() or not medida_y.strip():
         st.error("Por favor, ingresa ambas medidas (X y Y).")
-    elif not nombre.strip():
+        st.stop()
+    if not nombre.strip():
         st.error("Por favor, ingresa el nombre del proyecto.")
-    elif not nombre_seleccionado:
+        st.stop()
+    if not nombre_seleccionado:
         st.error("Por favor, selecciona un responsable.")
-    else:
-        # Convertir el link de Google Drive a un link de descarga directa
-        link_convertido = convertir_link_gdrive(link_original)
+        st.stop()
+    
+    # Convertir el link de Google Drive a un link de descarga directa
+    link_convertido = convertir_link_gdrive(link_original)
+    
+    # Preparar el payload en formato multipart/form-data
+    payload = {
+        'file': (None, link_convertido),
+        'medida_x': (None, medida_x),
+        'medida_y': (None, medida_y),
+        'nombre': (None, nombre),
+        'email': (None, correo_seleccionado)
+    }
+    
+    url_api = "http://189.192.20.132:51088/scripting/notify"
+    
+    try:
+        response = requests.post(url_api, files=payload)
         
-        # Preparar el payload en formato multipart/form-data
-        payload = {
-            'file': (None, link_convertido),
-            'medida_x': (None, medida_x),
-            'medida_y': (None, medida_y),
-            'nombre': (None, nombre),
-            'email': (None, correo_seleccionado)
-        }
+        st.write("**Código de estado:**", response.status_code)
+        st.write("**Respuesta de la API:**")
+        st.code(response.text)
         
-        url_api = "http://189.192.20.132:51088/scripting/notify"
-        
-        try:
-            response = requests.post(url_api, files=payload)
+        if response.status_code == 200:
+            st.success("Datos enviados correctamente")
+        else:
+            st.error("Error al enviar los datos")
             
-            st.write("**Código de estado:**", response.status_code)
-            st.write("**Respuesta de la API:**")
-            st.code(response.text)
-            
-            if response.status_code == 200:
-                st.success("Datos enviados correctamente")
-            else:
-                st.error("Error al enviar los datos")
-                
-            # Esperar 1 segundo y limpiar los campos
-            time.sleep(1)
-            st.session_state.link_original = ""
-            st.session_state.medida_x = ""
-            st.session_state.medida_y = ""
-            st.session_state.nombre = ""
-            st.session_state.nombre_seleccionado = ""
-        except Exception as e:
-            st.error(f"Ocurrió un error: {e}")
+        # Esperar 1 segundo, limpiar los valores del session_state y reiniciar la app
+        time.sleep(1)
+        st.session_state.link_original = ""
+        st.session_state.medida_x = ""
+        st.session_state.medida_y = ""
+        st.session_state.nombre = ""
+        st.session_state.nombre_seleccionado = ""
+        st.experimental_rerun()
+    except Exception as e:
+        st.error(f"Ocurrió un error: {e}")
