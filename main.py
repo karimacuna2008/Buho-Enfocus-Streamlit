@@ -49,13 +49,13 @@ correos = {
     "Susana Hernández": "shernandez@buhoms.com"
 }
 
-# Crear lista con opción vacía y los nombres ordenados
+# Crear lista con opción vacía y nombres ordenados
 nombres_ordenados = [""] + sorted(correos.keys())
 nombre_seleccionado = st.selectbox("Responsable", nombres_ordenados, index=0, key="nombre_seleccionado")
 correo_seleccionado = correos.get(nombre_seleccionado, "")
 
 if st.button("Enviar"):
-    # Validación de campos
+    # Validar que todos los campos requeridos estén completos
     if not link_original.strip():
         st.error("Por favor, ingresa el link del archivo.")
         st.stop()
@@ -95,8 +95,8 @@ if st.button("Enviar"):
         else:
             st.error("Error al enviar los datos")
         
-        # Esperar 1 segundo y reiniciar la app para que se reinicien los widgets a sus valores por defecto
+        # Esperar 1 segundo y reiniciar la app para limpiar los campos
         time.sleep(1)
-        st.experimental_rerun()
+        st.rerun()
     except Exception as e:
         st.error(f"Ocurrió un error: {e}")
