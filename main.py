@@ -9,11 +9,9 @@ def convertir_link_gdrive(url):
     """
     match = re.search(r'/d/([^/]+)', url)
     if match:
-        file_id = match.group(1)
-        nuevo_url = f"https://drive.google.com/uc?export=download&id={file_id}"
-        return nuevo_url
+        return f"https://drive.google.com/uc?export=download&id={match.group(1)}"
     else:
-        return url  # Retorna la URL original si no se encuentra el patrón
+        return url
 
 st.title("Enfocus Switch")
 
@@ -29,77 +27,70 @@ st.info(
     """
 )
 
-# Definir valores por defecto en los widgets
-link_original = st.text_input("Ingresa el link del archivo", key="link_original", value="")
-st.markdown("<p style='text-align: center;'>Ingresar medidas del arte</p>", unsafe_allow_html=True)
-col1, col2 = st.columns(2)
-with col1:
-    medida_x = st.text_input("Medida X", key="medida_x", value="")
-with col2:
-    medida_y = st.text_input("Medida Y", key="medida_y", value="")
-
-nombre = st.text_input("Nombre del proyecto", key="nombre", value="")
-
-# Diccionario con nombres y correos
-correos = {
-    "Karim Acuña": "kacuna@buhoms.com",
-    "Mariana Hernández": "print@buhoms.com",
-    "Mauricio Fernandez": "mfernandez@buhoms.com",
-    "Pablo Faz": "pfaz@buhoms.com",
-    "Susana Hernández": "shernandez@buhoms.com"
-}
-
-# Crear lista con opción vacía y nombres ordenados
-nombres_ordenados = [""] + sorted(correos.keys())
-nombre_seleccionado = st.selectbox("Responsable", nombres_ordenados, index=0, key="nombre_seleccionado")
-correo_seleccionado = correos.get(nombre_seleccionado, "")
-
-if st.button("Enviar"):
-    # Validar que todos los campos requeridos estén completos
-    if not link_original.strip():
-        st.error("Por favor, ingresa el link del archivo.")
-        st.stop()
-    if not medida_x.strip() or not medida_y.strip():
-        st.error("Por favor, ingresa ambas medidas (X y Y).")
-        st.stop()
-    if not nombre.strip():
-        st.error("Por favor, ingresa el nombre del proyecto.")
-        st.stop()
-    if not nombre_seleccionado:
-        st.error("Por favor, selecciona un responsable.")
-        st.stop()
+with st.form("datos_form"):
+    link_original = st.text_input("Ingresa el link del archivo", key="link_original")
+    st.markdown("<p style='text-align: center;'>Ingresar medidas del arte</p>", unsafe_allow_html=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        medida_x = st.text_input("Medida X", key="medida_x")
+    with col2:
+        medida_y = st.text_input("Medida Y", key="medida_y")
+    nombre = st.text_input("Nombre del proyecto", key="nombre")
     
-    # Convertir el link de Google Drive
-    link_convertido = convertir_link_gdrive(link_original)
-    
-    # Preparar el payload
-    payload = {
-        'file': (None, link_convertido),
-        'medida_x': (None, medida_x),
-        'medida_y': (None, medida_y),
-        'nombre': (None, nombre),
-        'email': (None, correo_seleccionado)
+    # Diccionario con nombres y correos
+    correos = {
+        "Karim Acuña": "kacuna@buhoms.com",
+        "Mariana Hernández": "print@buhoms.com",
+        "Mauricio Fernandez": "mfernandez@buhoms.com",
+        "Pablo Faz": "pfaz@buhoms.com",
+        "Susana Hernández": "shernandez@buhoms.com"
     }
+    # Crear lista con opción vacía y nombres ordenados
+    nombres_ordenados = [""] + sorted(correos.keys())
+    nombre_seleccionado = st.selectbox("Responsable", nombres_ordenados, index=0, key="nombre_seleccionado")
+    correo_seleccionado = correos.get(nombre_seleccionado, "")
     
-    url_api = "http://189.192.20.132:51088/scripting/notify"
+    submitted = st.form_submit_button("Enviar")
     
-    try:
-        response = requests.post(url_api, files=payload)
+    if submitted:
+        # Validar que todos los campos requeridos estén completos
+        if not link_original.strip():
+            st.error("Por favor, ingresa el link del archivo.")
+            st.stop()
+        elif not medida_x.strip() or not medida_y.strip():
+            st.error("Por favor, ingresa ambas medidas (X y Y).")
+            st.stop()
+        elif not nombre.strip():
+            st.error("Por favor, ingresa el nombre del proyecto.")
+            st.stop()
+        elif not nombre_seleccionado:
+            st.error("Por favor, selecciona un responsable.")
+            st.stop()
         
-        st.write("**Código de estado:**", response.status_code)
-        st.write("**Respuesta de la API:**")
-        st.code(response.text)
+        # Convertir el link y preparar el payload
+        link_convertido = convertir_link_gdrive(link_original)
+        payload = {
+            'file': (None, link_convertido),
+            'medida_x': (None, medida_x),
+            'medida_y': (None, medida_y),
+            'nombre': (None, nombre),
+            'email': (None, correo_seleccionado)
+        }
+        url_api = "http://189.192.20.132:51088/scripting/notify"
         
-        if response.status_code == 200:
-            st.success("Datos enviados correctamente")
-        else:
-            st.error("Error al enviar los datos")
-        
-        # Esperar 1 segundo y limpiar los campos eliminando las claves del session_state
-        time.sleep(1)
-        for key in ["link_original", "medida_x", "medida_y", "nombre", "nombre_seleccionado"]:
-            if key in st.session_state:
-                del st.session_state[key]
-        st.rerun()
-    except Exception as e:
-        st.error(f"Ocurrió un error: {e}")
+        try:
+            response = requests.post(url_api, files=payload)
+            st.write("**Código de estado:**", response.status_code)
+            st.write("**Respuesta de la API:**")
+            st.code(response.text)
+            
+            if response.status_code == 200:
+                st.success("Datos enviados correctamente")
+            else:
+                st.error("Error al enviar los datos")
+            
+            # Esperar 1 segundo y reiniciar la app para que se limpien los campos
+            time.sleep(1)
+            st.rerun()
+        except Exception as e:
+            st.error(f"Ocurrió un error: {e}")
