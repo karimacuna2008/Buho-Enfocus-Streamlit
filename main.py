@@ -24,6 +24,7 @@ st.info(
     Es necesario subir el archivo a Google Drive para que Enfocus pueda acceder a él.  
     La carpeta debe estar configurada para que cualquier persona con el enlace tenga acceso como **Editor**.
     
+    Esta carpeta ya ha sido configurada correctamente, es posible usarla. Si es necesario comunicarse con Karim Acuña (kacuna@buhoms.com).
     [Ir a la carpeta de Drive](https://drive.google.com/drive/folders/1EJFsO66uzrgWh9jZNLGTn5sORglf_Vcc?usp=sharing)
     """
 )
