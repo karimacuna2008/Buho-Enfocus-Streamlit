@@ -37,7 +37,6 @@ with st.form("datos_form"):
         medida_y = st.text_input("Medida Y", key="medida_y")
     nombre = st.text_input("Nombre del proyecto", key="nombre")
     
-    # Diccionario con nombres y correos
     correos = {
         "Karim Acuña": "kacuna@buhoms.com",
         "Mariana Hernández": "print@buhoms.com",
@@ -45,7 +44,6 @@ with st.form("datos_form"):
         "Pablo Faz": "pfaz@buhoms.com",
         "Susana Hernández": "shernandez@buhoms.com"
     }
-    # Crear lista con opción vacía y nombres ordenados
     nombres_ordenados = [""] + sorted(correos.keys())
     nombre_seleccionado = st.selectbox("Responsable", nombres_ordenados, index=0, key="nombre_seleccionado")
     correo_seleccionado = correos.get(nombre_seleccionado, "")
@@ -53,21 +51,20 @@ with st.form("datos_form"):
     submitted = st.form_submit_button("Enviar")
     
     if submitted:
-        # Validar que todos los campos requeridos estén completos
+        # Validaciones
         if not link_original.strip():
             st.error("Por favor, ingresa el link del archivo.")
             st.stop()
-        elif not medida_x.strip() or not medida_y.strip():
+        if not medida_x.strip() or not medida_y.strip():
             st.error("Por favor, ingresa ambas medidas (X y Y).")
             st.stop()
-        elif not nombre.strip():
+        if not nombre.strip():
             st.error("Por favor, ingresa el nombre del proyecto.")
             st.stop()
-        elif not nombre_seleccionado:
+        if not nombre_seleccionado:
             st.error("Por favor, selecciona un responsable.")
             st.stop()
         
-        # Convertir el link y preparar el payload
         link_convertido = convertir_link_gdrive(link_original)
         payload = {
             'file': (None, link_convertido),
@@ -89,8 +86,10 @@ with st.form("datos_form"):
             else:
                 st.error("Error al enviar los datos")
             
-            # Esperar 1 segundo y reiniciar la app para que se limpien los campos
             time.sleep(1)
+            # Reiniciar manualmente los campos asignando cadena vacía a las claves
+            for key in ["link_original", "medida_x", "medida_y", "nombre", "nombre_seleccionado"]:
+                st.session_state[key] = ""
             st.rerun()
         except Exception as e:
             st.error(f"Ocurrió un error: {e}")
