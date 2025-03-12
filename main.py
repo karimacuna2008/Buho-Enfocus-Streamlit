@@ -25,7 +25,7 @@ st.info(
     La carpeta debe estar configurada para que cualquier persona con el enlace tenga acceso como **Editor**.
     
     Esta carpeta ya ha sido configurada correctamente, es posible usarla. Si es necesario comunicarse con Karim Acuña (kacuna@buhoms.com).
-    
+
     [Ir a la carpeta de Drive](https://drive.google.com/drive/folders/1EJFsO66uzrgWh9jZNLGTn5sORglf_Vcc?usp=sharing)
     """
 )
@@ -45,6 +45,7 @@ nombre = st.text_input("Nombre del proyecto", key="nombre")
 
 # Diccionario con nombres y correos
 correos = {
+    "Seleccionar responsable": "",
     "Karim Acuña": "kacuna@buhoms.com",
     "Mariana Hernández": "print@buhoms.com",
     "Mauricio Fernandez": "mfernandez@buhoms.com",
