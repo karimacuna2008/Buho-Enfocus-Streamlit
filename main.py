@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import re
+import time
 
 def convertir_link_gdrive(url):
     """
@@ -16,11 +17,28 @@ def convertir_link_gdrive(url):
 
 st.title("Envío de Datos a API")
 
+# Mensaje de alerta con enlace a la carpeta de Google Drive
+st.markdown(
+    """
+    **Importante:**  
+    Es necesario subir el archivo a Google Drive para que Enfocus pueda acceder a él.  
+    La carpeta debe estar configurada para que cualquier persona con el enlace tenga acceso como **Editor**.  
+    Esta carpeta ya se encuentra configurada correctamente.  
+    [Ir a la carpeta de Drive](https://drive.google.com/drive/folders/1EJFsO66uzrgWh9jZNLGTn5sORglf_Vcc?usp=sharing)
+    """, unsafe_allow_html=True)
+
 # Entradas de usuario
-link_original = st.text_input("Ingresa el link del archivo (Google Drive)")
-medida_x = st.text_input("Ingresa la medida x")
-medida_y = st.text_input("Ingresa la medida y")
-nombre = st.text_input("Ingresa un nombre")
+# Se utilizan claves en los inputs para poder limpiarlos luego con st.session_state
+link_original = st.text_input("Ingresa el link del archivo (Google Drive)", key="link_original")
+
+# Mostrar los campos de medida en dos columnas
+col1, col2 = st.columns(2)
+with col1:
+    medida_x = st.text_input("Ingresa la medida x", key="medida_x")
+with col2:
+    medida_y = st.text_input("Ingresa la medida y", key="medida_y")
+
+nombre = st.text_input("Ingresa un nombre", key="nombre")
 
 # Diccionario con los nombres y correos
 correos = {
@@ -31,13 +49,9 @@ correos = {
     "Susana Hernández": "shernandez@buhoms.com"
 }
 
-# Crear lista de nombres ordenados alfabéticamente
+# Lista de nombres ordenados alfabéticamente
 nombres_ordenados = sorted(correos.keys())
-
-# Dropdown para seleccionar el nombre
-nombre_seleccionado = st.selectbox("Selecciona el nombre", nombres_ordenados)
-
-# Obtener el correo correspondiente al nombre seleccionado
+nombre_seleccionado = st.selectbox("Selecciona el nombre", nombres_ordenados, key="nombre_seleccionado")
 correo_seleccionado = correos[nombre_seleccionado]
 
 if st.button("Enviar"):
@@ -68,5 +82,11 @@ if st.button("Enviar"):
         else:
             st.error("Error al enviar los datos")
             
+        # Esperar 1 segundo y limpiar los campos
+        time.sleep(1)
+        st.session_state.link_original = ""
+        st.session_state.medida_x = ""
+        st.session_state.medida_y = ""
+        st.session_state.nombre = ""
     except Exception as e:
         st.error(f"Ocurrió un error: {e}")
