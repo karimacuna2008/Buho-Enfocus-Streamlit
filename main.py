@@ -2,7 +2,6 @@ import streamlit as st
 import requests
 import re
 import time
-from streamlit_autorefresh import st_autorefresh
 
 def convertir_link_gdrive(url):
     """
@@ -84,12 +83,13 @@ with st.form("datos_form"):
             st.write("**Respuesta de la API:**")
             st.code(response.text)
             
+            msg_placeholder = st.empty()
             if response.status_code == 200:
-                st.success("Datos enviados correctamente. La página se refrescará en 3 segundos...")
+                msg_placeholder.success("Datos enviados correctamente")
             else:
-                st.error("Error al enviar los datos. La página se refrescará en 3 segundos...")
+                msg_placeholder.error("Error al enviar los datos")
             
-            # Refresca la página 3 segundos después (3000 milisegundos) una sola vez.
-            st_autorefresh(interval=3000, limit=3, key="auto_refresh")
+            time.sleep(3)
+            msg_placeholder.empty()  # Se quita el mensaje después de 3 segundos
         except Exception as e:
             st.error(f"Ocurrió un error: {e}")
