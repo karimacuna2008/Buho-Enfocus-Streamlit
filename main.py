@@ -90,6 +90,6 @@ with st.form("datos_form"):
                 st.error("Error al enviar los datos. La página se refrescará en 3 segundos...")
             
             # Refresca la página 3 segundos después (3000 milisegundos) una sola vez.
-            st_autorefresh(interval=3000, limit=1, key="auto_refresh")
+            st_autorefresh(interval=3000, limit=3, key="auto_refresh")
         except Exception as e:
             st.error(f"Ocurrió un error: {e}")
