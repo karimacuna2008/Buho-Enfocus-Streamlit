@@ -32,7 +32,7 @@ st.info(
 link_original = st.text_input("Ingresa el link del archivo", key="link_original")
 
 # Mostrar los campos de medida en dos columnas
-st.header("Ingresar medidas del arte")
+st.subheader("Ingresar medidas del arte")
 col1, col2 = st.columns(2)
 with col1:
     medida_x = st.text_input("Medida X", key="medida_x")
