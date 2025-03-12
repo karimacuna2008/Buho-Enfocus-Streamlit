@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import re
 import time
-from streamlit_autorefresh import st_autorefresh
+
 
 # Si se ha activado el flag "reset", eliminamos las claves de los widgets
 if st.session_state.get("reset", False):
