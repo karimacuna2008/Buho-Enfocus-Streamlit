@@ -17,19 +17,18 @@ def convertir_link_gdrive(url):
 
 st.title("Envío de Datos a API")
 
-# Mostrar mensaje en un recuadro destacado
+# Mostrar mensaje de alerta en un recuadro usando st.info
 st.info(
     """
     **Importante:**
-    Es necesario subir el archivo a Google Drive para que Enfocus pueda acceder a él.  
-    La carpeta debe estar configurada para que cualquier persona con el enlace tenga acceso como **Editor**.  
-    Esta carpeta ya se encuentra configurada correctamente.  
+    Es necesario subir el archivo a Google Drive para que Enfocus pueda acceder a él.
+    La carpeta debe estar configurada para que cualquier persona con el enlace tenga acceso como **Editor**.
+    Esta carpeta ya se encuentra configurada correctamente.
     [Ir a la carpeta de Drive](https://drive.google.com/drive/folders/1EJFsO66uzrgWh9jZNLGTn5sORglf_Vcc?usp=sharing)
     """
 )
 
 # Entradas de usuario
-# Se utilizan claves en los inputs para poder limpiarlos luego con st.session_state
 link_original = st.text_input("Ingresa el link del archivo (Google Drive)", key="link_original")
 
 # Mostrar los campos de medida en dos columnas
@@ -41,7 +40,7 @@ with col2:
 
 nombre = st.text_input("Ingresa un nombre", key="nombre")
 
-# Diccionario con los nombres y correos
+# Diccionario con nombres y correos
 correos = {
     "Karim Acuña": "kacuna@buhoms.com",
     "Mariana Hernández": "print@buhoms.com",
@@ -56,10 +55,10 @@ nombre_seleccionado = st.selectbox("Selecciona el nombre", nombres_ordenados, ke
 correo_seleccionado = correos[nombre_seleccionado]
 
 if st.button("Enviar"):
-    # Convertir el link de Google Drive a link de descarga directa
+    # Convertir el link de Google Drive a un link de descarga directa
     link_convertido = convertir_link_gdrive(link_original)
     
-    # Preparar el payload para la API en formato multipart/form-data
+    # Preparar el payload en formato multipart/form-data
     payload = {
         'file': (None, link_convertido),
         'medida_x': (None, medida_x),
@@ -71,7 +70,6 @@ if st.button("Enviar"):
     url_api = "http://189.192.20.132:51088/scripting/notify"
     
     try:
-        # Enviar la solicitud POST usando 'files' para que se envíe como multipart/form-data
         response = requests.post(url_api, files=payload)
         
         st.write("**Código de estado:**", response.status_code)
