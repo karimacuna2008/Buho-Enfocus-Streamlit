@@ -105,7 +105,7 @@ with st.form("datos_form"):
 left, middle, right = st.columns(3)
 
 # Botón para enviar el archivo dummy desde Google Drive
-if middle.button("FIX  \nCarga de archivos - Enfocus", type="primary"):
+if middle.button("FIX  Carga de archivos - Enfocus", type="primary"):
     url_api = "http://189.192.20.132:51088/scripting/notify"
     
     try:
