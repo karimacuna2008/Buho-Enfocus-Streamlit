@@ -35,12 +35,7 @@ st.info(
 )
 
 
-st.markdown(
-                "<h3 style='color: red; background-color: yellow;'>"
-                "Servidor inaccesible, posible desconexión de servidor del Enfocus, notificar a TI."
-                "</h3>",
-                unsafe_allow_html=True
-            )
+
 
 
 with st.form("datos_form"):
@@ -113,7 +108,7 @@ with st.form("datos_form"):
             error_str = str(e).lower()
             if "max retries exceeded" in error_str or "timed out" in error_str or "failed to establish a new connection" in error_str:
                 st.markdown(
-                    "<h3 style='color: red;'>"
+                    "<h3 style='color: red; background-color: yellow;'>"
                     "Servidor inaccesible, posible desconexión de servidor del Enfocus, notificar a TI."
                     "</h3>",
                     unsafe_allow_html=True
@@ -155,7 +150,7 @@ if middle.button("FIX  \nCarga de archivos - Enfocus", type="primary"):
         error_str = str(e).lower()
         if "max retries exceeded" in error_str or "timed out" in error_str or "failed to establish a new connection" in error_str:
             st.markdown(
-                "<h3 style='color: red;'>"
+                "<h3 style='color: red; background-color: yellow;'>"
                 "Servidor inaccesible, posible desconexión de servidor del Enfocus, notificar a TI."
                 "</h3>",
                 unsafe_allow_html=True
