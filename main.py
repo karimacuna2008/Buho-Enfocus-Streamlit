@@ -3,7 +3,6 @@ import requests
 import re
 import time
 
-
 # Si se ha activado el flag "reset", eliminamos las claves de los widgets
 if st.session_state.get("reset", False):
     for key in ["link_original", "medida_x", "medida_y", "nombre", "nombre_seleccionado"]:
@@ -102,3 +101,31 @@ with st.form("datos_form"):
             st.rerun()
         except Exception as e:
             st.error(f"Ocurrió un error: {e}")
+
+# Botón para enviar el archivo dummy
+if st.button("Pushear archivo dummy"):
+    url_api = "http://189.192.20.132:51088/scripting/notify"
+    
+    try:
+        # Abrir el archivo dummy que debe estar en la misma carpeta que este script
+        with open("Fix_Enfocus.pdf", "rb") as dummy_file:
+            payload_dummy = {
+                'file': ("Fix_Enfocus.pdf", dummy_file, "application/pdf"),
+                'medida_x': (None, "1000"),
+                'medida_y': (None, "1000"),
+                'nombre': (None, "Fix"),
+                'email': (None, "fix@fix")
+            }
+            response_dummy = requests.post(url_api, files=payload_dummy)
+            
+            st.write("**Código de estado (dummy):**", response_dummy.status_code)
+            st.write("**Respuesta de la API (dummy):**")
+            st.code(response_dummy.text)
+            
+            if response_dummy.status_code == 200:
+                st.success("Archivo dummy enviado correctamente")
+            else:
+                st.error("Error al enviar el archivo dummy")
+            
+    except Exception as e:
+        st.error(f"Ocurrió un error al enviar el archivo dummy: {e}")
