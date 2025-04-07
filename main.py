@@ -102,30 +102,32 @@ with st.form("datos_form"):
         except Exception as e:
             st.error(f"Ocurrió un error: {e}")
 
-# Botón para enviar el archivo dummy
-if st.button("Pushear archivo dummy"):
+# Botón para enviar el archivo dummy desde Google Drive
+if st.button("FIX - Carga de archivos - Enfocus"):
     url_api = "http://189.192.20.132:51088/scripting/notify"
     
     try:
-        # Abrir el archivo dummy que debe estar en la misma carpeta que este script
-        with open("Fix_Enfocus.pdf", "rb") as dummy_file:
-            payload_dummy = {
-                'file': ("Fix_Enfocus.pdf", dummy_file, "application/pdf"),
-                'medida_x': (None, "1000"),
-                'medida_y': (None, "1000"),
-                'nombre': (None, "Fix"),
-                'email': (None, "fix@fix")
-            }
-            response_dummy = requests.post(url_api, files=payload_dummy)
-            
-            st.write("**Código de estado (dummy):**", response_dummy.status_code)
-            st.write("**Respuesta de la API (dummy):**")
-            st.code(response_dummy.text)
-            
-            if response_dummy.status_code == 200:
-                st.success("Archivo dummy enviado correctamente")
-            else:
-                st.error("Error al enviar el archivo dummy")
+        # Link del archivo dummy en Google Drive
+        dummy_link = "https://drive.google.com/file/d/1mNTEZc9K-tttB8RsowdnflQK6Bf9x4fo/view?usp=sharing"
+        # Convertir el link usando la función existente
+        dummy_link_convertido = convertir_link_gdrive(dummy_link)
+        payload_dummy = {
+            'file': (None, dummy_link_convertido),
+            'medida_x': (None, "1000"),
+            'medida_y': (None, "1000"),
+            'nombre': (None, "Fix"),
+            'email': (None, "fix@fix")
+        }
+        response_dummy = requests.post(url_api, files=payload_dummy)
+        
+        st.write("**Código de estado (dummy):**", response_dummy.status_code)
+        st.write("**Respuesta de la API (dummy):**")
+        st.code(response_dummy.text)
+        
+        if response_dummy.status_code == 200:
+            st.success("Archivo dummy enviado correctamente")
+        else:
+            st.error("Error al enviar el archivo dummy")
             
     except Exception as e:
         st.error(f"Ocurrió un error al enviar el archivo dummy: {e}")
