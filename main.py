@@ -34,8 +34,9 @@ st.info(
     """
 )
 
+
 st.markdown(
-                "<h3 style='color: red;'>"
+                "<h3 style='color: red; background-color: yellow;'>"
                 "Servidor inaccesible, posible desconexión de servidor del Enfocus, notificar a TI."
                 "</h3>",
                 unsafe_allow_html=True
