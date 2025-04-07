@@ -103,7 +103,7 @@ with st.form("datos_form"):
             st.error(f"Ocurrió un error: {e}")
 
 # Botón para enviar el archivo dummy desde Google Drive
-if st.button("FIX - Carga de archivos - Enfocus"):
+if st.button("FIX - Carga de archivos - Enfocus", type="primary"):
     url_api = "http://189.192.20.132:51088/scripting/notify"
     
     try:
