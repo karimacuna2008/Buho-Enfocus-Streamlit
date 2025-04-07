@@ -85,7 +85,7 @@ with st.form("datos_form"):
         url_api = "http://189.192.20.132:51088/scripting/notify"
         
         try:
-            response = requests.post(url_api, files=payload)
+            response = requests.post(url_api, files=payload, timeout=10)  # Se agrega un timeout de ejemplo (10s)
             st.write("**Código de estado:**", response.status_code)
             st.write("**Respuesta de la API:**")
             st.code(response.text)
@@ -99,13 +99,21 @@ with st.form("datos_form"):
             # Activar el flag "reset" y reiniciar la app
             st.session_state["reset"] = True
             st.rerun()
-        except Exception as e:
-            st.error(f"Ocurrió un error: {e}")
-
-left, middle, right = st.columns(3)
+        except requests.exceptions.RequestException as e:
+            # Aquí podemos buscar "Max retries exceeded" o "timed out" en el mensaje de error
+            error_str = str(e).lower()
+            if "max retries exceeded" in error_str or "timed out" in error_str or "failed to establish a new connection" in error_str:
+                st.markdown(
+                    "<h3 style='color: red;'>"
+                    "Servidor inaccesible, posible desconexión de servidor del Enfocus, notificar a TI."
+                    "</h3>",
+                    unsafe_allow_html=True
+                )
+            else:
+                st.error(f"Ocurrió un error: {e}")
 
 # Botón para enviar el archivo dummy desde Google Drive
-if middle.button("FIX  \nCarga de archivos - Enfocus", type="primary"):
+if st.button("Pushear archivo dummy"):
     url_api = "http://189.192.20.132:51088/scripting/notify"
     
     try:
@@ -120,7 +128,7 @@ if middle.button("FIX  \nCarga de archivos - Enfocus", type="primary"):
             'nombre': (None, "Fix"),
             'email': (None, "fix@fix")
         }
-        response_dummy = requests.post(url_api, files=payload_dummy)
+        response_dummy = requests.post(url_api, files=payload_dummy, timeout=10)
         
         st.write("**Código de estado (dummy):**", response_dummy.status_code)
         st.write("**Respuesta de la API (dummy):**")
@@ -131,5 +139,14 @@ if middle.button("FIX  \nCarga de archivos - Enfocus", type="primary"):
         else:
             st.error("Error al enviar el archivo dummy")
             
-    except Exception as e:
-        st.error(f"Ocurrió un error al enviar el archivo dummy: {e}")
+    except requests.exceptions.RequestException as e:
+        error_str = str(e).lower()
+        if "max retries exceeded" in error_str or "timed out" in error_str or "failed to establish a new connection" in error_str:
+            st.markdown(
+                "<h3 style='color: red;'>"
+                "Servidor inaccesible, posible desconexión de servidor del Enfocus, notificar a TI."
+                "</h3>",
+                unsafe_allow_html=True
+            )
+        else:
+            st.error(f"Ocurrió un error al enviar el archivo dummy: {e}")
