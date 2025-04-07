@@ -112,8 +112,11 @@ with st.form("datos_form"):
             else:
                 st.error(f"Ocurrió un error: {e}")
 
+
+
+left, middle, right = st.columns(3)
 # Botón para enviar el archivo dummy desde Google Drive
-if st.button("Pushear archivo dummy"):
+if middle.button("FIX  \nCarga de archivos - Enfocus", type="primary"):
     url_api = "http://189.192.20.132:51088/scripting/notify"
     
     try:
@@ -150,3 +153,4 @@ if st.button("Pushear archivo dummy"):
             )
         else:
             st.error(f"Ocurrió un error al enviar el archivo dummy: {e}")
+            
