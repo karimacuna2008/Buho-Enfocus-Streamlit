@@ -34,6 +34,14 @@ st.info(
     """
 )
 
+st.markdown(
+                "<h3 style='color: red;'>"
+                "Servidor inaccesible, posible desconexión de servidor del Enfocus, notificar a TI."
+                "</h3>",
+                unsafe_allow_html=True
+            )
+
+
 with st.form("datos_form"):
     link_original = st.text_input("Ingresa el link del archivo", key="link_original")
     st.markdown("<p style='text-align: center;'>Ingresar medidas del arte</p>", unsafe_allow_html=True)
@@ -153,4 +161,3 @@ if middle.button("FIX  \nCarga de archivos - Enfocus", type="primary"):
             )
         else:
             st.error(f"Ocurrió un error al enviar el archivo dummy: {e}")
-            
