@@ -102,8 +102,10 @@ with st.form("datos_form"):
         except Exception as e:
             st.error(f"Ocurrió un error: {e}")
 
+left, middle, right = st.columns(3)
+
 # Botón para enviar el archivo dummy desde Google Drive
-if st.button("FIX - Carga de archivos - Enfocus", type="primary"):
+if middle.button("FIX - Carga de archivos - Enfocus", type="primary", use_container_width=True):
     url_api = "http://189.192.20.132:51088/scripting/notify"
     
     try:
