@@ -31,7 +31,7 @@ st.info(
     Esta carpeta ya ha sido configurada correctamente; si es necesario, comunicarse con Karim Acuña (kacuna@buhoms.com).
 
     [Ir a la carpeta de Drive](https://drive.google.com/drive/folders/1EJFsO66uzrgWh9jZNLGTn5sORglf_Vcc?usp=sharing)
-    url_api = "http://buhoms.dyndns.org:51088/scripting/notify"
+    st.markdown("url_api = http://buhoms.dyndns.org:51088/scripting/notify")
     """
 )
 
