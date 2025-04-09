@@ -86,7 +86,8 @@ with st.form("datos_form"):
             'nombre': (None, nombre),
             'email': (None, correo_seleccionado)
         }
-        url_api = "http://189.192.20.132:51088/scripting/notify"
+        # url_api = "http://189.192.20.132:51088/scripting/notify"
+        url_api = "http://buhoms.dyndns.org:51088/scripting/notify"
         
         try:
             response = requests.post(url_api, files=payload, timeout=10)  # Se agrega un timeout de ejemplo (10s)
