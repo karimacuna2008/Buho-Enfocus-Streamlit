@@ -32,7 +32,7 @@ st.info(
 
     [Ir a la carpeta de Drive](https://drive.google.com/drive/folders/1EJFsO66uzrgWh9jZNLGTn5sORglf_Vcc?usp=sharing)
     
-    "url_api = http://buhoms.dyndns.org:51088/scripting/notify")
+    IP actual: http://buhoms.dyndns.org:51088/scripting/notify")
     """
 )
 
