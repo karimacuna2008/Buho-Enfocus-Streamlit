@@ -3,7 +3,7 @@ import requests
 import re
 import time
 
-# Si se ha activado el flag "reset", eliminamos las claves de los widgets
+# Reset de app
 if st.session_state.get("reset", False):
     for key in ["link_original", "medida_x", "medida_y", "nombre", "nombre_seleccionado"]:
         if key in st.session_state:
@@ -12,7 +12,7 @@ if st.session_state.get("reset", False):
 
 def convertir_link_gdrive(url):
     """
-    Extrae el id del archivo desde la URL de Google Drive y retorna el link para descarga directa.
+    Funcion para convertir el link de Google para compartir en uno de descarga.
     """
     match = re.search(r'/d/([^/]+)', url)
     if match:
@@ -31,7 +31,8 @@ st.info(
     Esta carpeta ya ha sido configurada correctamente; si es necesario, comunicarse con Karim Acuña (kacuna@buhoms.com).
 
     [Ir a la carpeta de Drive](https://drive.google.com/drive/folders/1EJFsO66uzrgWh9jZNLGTn5sORglf_Vcc?usp=sharing)
-    st.markdown("url_api = http://buhoms.dyndns.org:51088/scripting/notify")
+    
+    "url_api = http://buhoms.dyndns.org:51088/scripting/notify")
     """
 )
 
@@ -57,7 +58,7 @@ with st.form("datos_form"):
         "Pablo Faz": "pfaz@buhoms.com",
         "Susana Hernández": "shernandez@buhoms.com"
     }
-    # Crear lista con opción vacía y nombres ordenados
+    # Lista ordenada
     nombres_ordenados = [""] + sorted(correos.keys())
     nombre_seleccionado = st.selectbox("Responsable", nombres_ordenados, index=0, key="nombre_seleccionado")
     correo_seleccionado = correos.get(nombre_seleccionado, "")
@@ -65,7 +66,7 @@ with st.form("datos_form"):
     submitted = st.form_submit_button("Enviar")
     
     if submitted:
-        # Validar campos
+        # Validar campos faltantes
         if not link_original.strip():
             st.error("Por favor, ingresa el link del archivo.")
             st.stop()
@@ -87,11 +88,11 @@ with st.form("datos_form"):
             'nombre': (None, nombre),
             'email': (None, correo_seleccionado)
         }
-        # url_api = "http://189.192.20.132:51088/scripting/notify"
-        url_api = "http://buhoms.dyndns.org:51088/scripting/notify"
+#        url_api = "http://189.192.20.132:51088/scripting/notify"        # IP antigua
+        url_api = "http://buhoms.dyndns.org:51088/scripting/notify"     # Nueva IP
         
         try:
-            response = requests.post(url_api, files=payload, timeout=10)  # Se agrega un timeout de ejemplo (10s)
+            response = requests.post(url_api, files=payload, timeout=10)
             st.write("**Código de estado:**", response.status_code)
             st.write("**Respuesta de la API:**")
             st.code(response.text)
@@ -106,12 +107,12 @@ with st.form("datos_form"):
             st.session_state["reset"] = True
             st.rerun()
         except requests.exceptions.RequestException as e:
-            # Aquí podemos buscar "Max retries exceeded" o "timed out" en el mensaje de error
+            # Buscar "Max retries exceeded" o "timed out" en el mensaje de error = Error de comunicación con el servidor
             error_str = str(e).lower()
             if "max retries exceeded" in error_str or "timed out" in error_str or "failed to establish a new connection" in error_str:
                 st.markdown(
                     "<h3 style='color: red; background-color: yellow;'>"
-                    "Servidor inaccesible, posible desconexión de servidor del Enfocus, notificar a TI."
+                    "Servidor inaccesible, posible desconexión del servidor de Enfocus, notificar a TI."
                     "</h3>",
                     unsafe_allow_html=True
                 )
@@ -123,13 +124,13 @@ with st.form("datos_form"):
 left, middle, right = st.columns(3)
 # Botón para enviar el archivo dummy desde Google Drive
 if middle.button("FIX  \nCarga de archivos - Enfocus", type="primary"):
-    # url_api = "http://189.192.20.132:51088/scripting/notify"
-    url_api = "http://buhoms.dyndns.org:51088/scripting/notify"
+#    url_api = "http://189.192.20.132:51088/scripting/notify"        # IP Antigua
+    url_api = "http://buhoms.dyndns.org:51088/scripting/notify"     # Nueva IP
     
     try:
         # Link del archivo dummy en Google Drive
         dummy_link = "https://drive.google.com/file/d/1mNTEZc9K-tttB8RsowdnflQK6Bf9x4fo/view?usp=sharing"
-        # Convertir el link usando la función existente
+        # Convertir el link
         dummy_link_convertido = convertir_link_gdrive(dummy_link)
         payload_dummy = {
             'file': (None, dummy_link_convertido),
