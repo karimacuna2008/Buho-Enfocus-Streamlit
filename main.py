@@ -32,7 +32,6 @@ st.info(
 
     [Ir a la carpeta de Drive](https://drive.google.com/drive/folders/1EJFsO66uzrgWh9jZNLGTn5sORglf_Vcc?usp=sharing)
     
-    IP actual: http://buhoms.dyndns.org:51088/scripting/notify")
     """
 )
 
@@ -91,7 +90,7 @@ with st.form("datos_form"):
         url_api = "https://30d2-189-192-20-132.ngrok-free.app/scripting/notify"        # IP antigua
         
         try:
-            response = requests.post(url_api, files=payload, timeout=10)
+            response = requests.post(url_api, files=payload, timeout=10, verify=False)
             st.write("**Código de estado:**", response.status_code)
             st.write("**Respuesta de la API:**")
             st.code(response.text)
@@ -125,6 +124,7 @@ left, middle, right = st.columns(3)
 if middle.button("FIX  \nCarga de archivos - Enfocus", type="primary"):
 #    url_api = "http://189.192.20.132:51088/scripting/notify"        # IP Antigua
     url_api = "https://30d2-189-192-20-132.ngrok-free.app/scripting/notify"
+
     try:
         # Link del archivo dummy en Google Drive
         dummy_link = "https://drive.google.com/file/d/1mNTEZc9K-tttB8RsowdnflQK6Bf9x4fo/view?usp=sharing"
@@ -137,7 +137,7 @@ if middle.button("FIX  \nCarga de archivos - Enfocus", type="primary"):
             'nombre': (None, "Fix"),
             'email': (None, "fix@fix")
         }
-        response_dummy = requests.post(url_api, files=payload_dummy, timeout=10)
+        response_dummy = requests.post(url_api, files=payload_dummy, timeout=10, verify=False)
         
         st.write("**Código de estado (dummy):**", response_dummy.status_code)
         st.write("**Respuesta de la API (dummy):**")
