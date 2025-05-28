@@ -87,7 +87,7 @@ with st.form("datos_form"):
             'nombre': (None, nombre),
             'email': (None, correo_seleccionado)
         }
-        url_api = "https://30d2-189-192-20-132.ngrok-free.app/scripting/notify"        # IP antigua
+        url_api = "https://b40a-189-192-20-132.ngrok-free.app/scripting/notify"        # IP antigua
         
         try:
             response = requests.post(url_api, files=payload, timeout=10, verify=False)
@@ -123,7 +123,7 @@ left, middle, right = st.columns(3)
 # Botón para enviar el archivo dummy desde Google Drive
 if middle.button("FIX  \nCarga de archivos - Enfocus", type="primary"):
 #    url_api = "http://189.192.20.132:51088/scripting/notify"        # IP Antigua
-    url_api = "https://9d6b-189-192-20-132.ngrok-free.app/scripting/notify"
+    url_api = "https://b40a-189-192-20-132.ngrok-free.app/scripting/notify"
 
     try:
         # Link del archivo dummy en Google Drive
