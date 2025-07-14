@@ -86,9 +86,14 @@ with st.form("datos_form"):
             'nombre':   (None, nombre),
             'email':    (None, correo_seleccionado)
         }
+<<<<<<< HEAD
         url_api = "https://200.76.137.190/scripting/notify"  # Asegúrate de que esta ruta exista
 
         logger.debug(f"POST {url_api} payload={payload}")
+=======
+        url_api = "https://200.76.137.190:51088/scripting/notify"        # IP antigua
+        
+>>>>>>> e9e26c17f8f9e568bd2ad43ffb3c138eaf721570
         try:
             response = requests.post(url_api, files=payload, timeout=10, verify=False)
             logger.debug(f"Response status: {response.status_code}")
@@ -121,6 +126,7 @@ with st.form("datos_form"):
 
 left, middle, right = st.columns(3)
 if middle.button("FIX  \nCarga de archivos - Enfocus", type="primary"):
+<<<<<<< HEAD
     url_api = "https://200.76.137.190/scripting/notify"
     dummy_link = "https://drive.google.com/file/d/1mNTEZc9K-tttB8RsowdnflQK6Bf9x4fo/view?usp=sharing"
     payload_dummy = {
@@ -131,6 +137,11 @@ if middle.button("FIX  \nCarga de archivos - Enfocus", type="primary"):
         'email':    (None, "fix@fix")
     }
     logger.debug(f"POST dummy to {url_api} payload={payload_dummy}")
+=======
+#    url_api = "http://189.192.20.132:51088/scripting/notify"        # IP Antigua
+    url_api = "https://200.76.137.190:51088/scripting/notify"
+
+>>>>>>> e9e26c17f8f9e568bd2ad43ffb3c138eaf721570
     try:
         response_dummy = requests.post(url_api, files=payload_dummy, timeout=10, verify=False)
         logger.debug(f"Dummy response status: {response_dummy.status_code}")
