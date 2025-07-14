@@ -18,7 +18,7 @@ logging.getLogger("urllib3").setLevel(logging.DEBUG)
 logging.getLogger("urllib3").propagate = True
 
 # ————— Constantes de API (todavía en el código) —————
-BASE_URL    = "https://200.76.137.190"
+BASE_URL    = "http://200.76.137.190"
 NOTIFY_PATH = "/scripting/notify"
 URL_API     = BASE_URL + NOTIFY_PATH
 
