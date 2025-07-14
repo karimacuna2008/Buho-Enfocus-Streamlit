@@ -17,6 +17,11 @@ http_client.HTTPConnection.debuglevel = 1
 logging.getLogger("urllib3").setLevel(logging.DEBUG)
 logging.getLogger("urllib3").propagate = True
 
+# ————— Constantes de API (todavía en el código) —————
+BASE_URL    = "https://200.76.137.190"
+NOTIFY_PATH = "/scripting/notify"
+URL_API     = BASE_URL + NOTIFY_PATH
+
 # ————— Reset de app —————
 if st.session_state.get("reset", False):
     for key in ["link_original", "medida_x", "medida_y", "nombre", "nombre_seleccionado"]:
@@ -48,13 +53,13 @@ with st.form("datos_form"):
     nombre = st.text_input("Nombre del proyecto", key="nombre")
 
     correos = {
-        "Karim Acuña":     "kacuna@buhoms.com",
+        "Karim Acuña":      "kacuna@buhoms.com",
         "Mariana Hernández":"print@buhoms.com",
         "Mauricio Fernandez":"mfernandez@buhoms.com",
-        "Pablo Faz":       "pfaz@buhoms.com",
-        "Susana Hernández":"shernandez@buhoms.com"
+        "Pablo Faz":        "pfaz@buhoms.com",
+        "Susana Hernández": "shernandez@buhoms.com"
     }
-    nombres_ordenados = [""] + sorted(correos.keys())
+    nombres_ordenados   = [""] + sorted(correos.keys())
     nombre_seleccionado = st.selectbox("Responsable", nombres_ordenados, index=0, key="nombre_seleccionado")
     correo_seleccionado = correos.get(nombre_seleccionado, "")
 
@@ -73,6 +78,7 @@ with st.form("datos_form"):
             st.error("Por favor, selecciona un responsable.")
             st.stop()
 
+        # Preparar payload
         link_convertido = convertir_link_gdrive(link_original)
         payload = {
             'file':     (None, link_convertido),
@@ -81,37 +87,36 @@ with st.form("datos_form"):
             'nombre':   (None, nombre),
             'email':    (None, correo_seleccionado)
         }
-        url_api = "https://200.76.137.190/scripting/notify"
-        logger.debug(f"POST {url_api} payload={payload}")
+
+        # Mostrar en UI la URL completa
+        st.write("📡 Enviando a:", URL_API)
+        logger.debug(f"→ Enviando POST a {URL_API} con payload={payload}")
 
         try:
-            response = requests.post(url_api, files=payload, timeout=10, verify=False)
+            response = requests.post(URL_API, files=payload, timeout=10, verify=False)
+            st.write("**Código de estado:**", response.status_code)
+            st.code(response.text, language="html")
             logger.debug(f"Response status: {response.status_code}")
             logger.debug(f"Response body: {response.text!r}")
 
-            st.write("**Código de estado:**", response.status_code)
-            st.code(response.text)
-
             if response.status_code == 200:
-                st.success("Datos enviados correctamente")
+                st.success("✅ Datos enviados correctamente")
+            elif response.status_code == 404:
+                st.error(f"🛑 404 Not Found en `{NOTIFY_PATH}`. ¿La ruta existe en el backend?")
             else:
-                st.error("Error al enviar los datos")
+                st.error(f"⚠️ Error {response.status_code}. Revisa los logs para más detalles.")
 
-            time.sleep(3)
+            time.sleep(1)
             st.session_state["reset"] = True
             st.rerun()
 
         except requests.exceptions.RequestException as e:
-            logger.error("Excepción en request", exc_info=e)
-            err = str(e).lower()
-            if any(x in err for x in ["max retries exceeded", "timed out", "failed to establish"]):
-                st.error("Servidor inaccesible, notificar a TI.")
-            else:
-                st.error(f"Ocurrió un error: {e}")
+            st.error(f"❌ Excepción en la llamada: {e}")
+            logger.exception("RequestException")
 
+# ————— Botón FIX dummy —————
 left, middle, right = st.columns(3)
 if middle.button("FIX  \nCarga de archivos - Enfocus", type="primary"):
-    url_api = "https://200.76.137.190/scripting/notify"
     dummy_link = "https://drive.google.com/file/d/1mNTEZc9K-tttB8RsowdnflQK6Bf9x4fo/view?usp=sharing"
     payload_dummy = {
         'file':     (None, convertir_link_gdrive(dummy_link)),
@@ -120,25 +125,24 @@ if middle.button("FIX  \nCarga de archivos - Enfocus", type="primary"):
         'nombre':   (None, "Fix"),
         'email':    (None, "fix@fix")
     }
-    logger.debug(f"POST dummy to {url_api} payload={payload_dummy}")
+
+    st.write("📡 Enviando dummy a:", URL_API)
+    logger.debug(f"→ Enviando POST dummy a {URL_API} con payload={payload_dummy}")
 
     try:
-        response_dummy = requests.post(url_api, files=payload_dummy, timeout=10, verify=False)
+        response_dummy = requests.post(URL_API, files=payload_dummy, timeout=10, verify=False)
+        st.write("**Código de estado (dummy):**", response_dummy.status_code)
+        st.code(response_dummy.text, language="html")
         logger.debug(f"Dummy status: {response_dummy.status_code}")
         logger.debug(f"Dummy body: {response_dummy.text!r}")
 
-        st.write("**Código de estado (dummy):**", response_dummy.status_code)
-        st.code(response_dummy.text)
-
         if response_dummy.status_code == 200:
-            st.success("Archivo dummy enviado correctamente")
+            st.success("✅ Archivo dummy enviado correctamente")
+        elif response_dummy.status_code == 404:
+            st.error(f"🛑 404 Not Found en `{NOTIFY_PATH}` al enviar dummy.")
         else:
-            st.error("Error al enviar el archivo dummy")
+            st.error(f"⚠️ Error {response_dummy.status_code} en dummy.")
 
     except requests.exceptions.RequestException as e:
-        logger.error("Excepción en dummy request", exc_info=e)
-        err = str(e).lower()
-        if any(x in err for x in ["max retries exceeded", "timed out", "failed to establish"]):
-            st.error("Servidor inaccesible, notificar a TI.")
-        else:
-            st.error(f"Ocurrió un error: {e}")
+        st.error(f"❌ Excepción en dummy request: {e}")
+        logger.exception("Dummy RequestException")
